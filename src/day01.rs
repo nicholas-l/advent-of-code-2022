@@ -1,25 +1,28 @@
 use std::io::BufRead;
 
-use itertools::Itertools;
-
-pub fn star_one(input: impl BufRead) -> usize {
-    input
-        .lines()
-        .map(|x| x.unwrap().parse::<usize>().unwrap())
-        .tuple_windows()
-        .filter(|(a, b)| b > a)
-        .count()
+pub fn star_one(mut input: impl BufRead) -> usize {
+    let mut buf = String::new();
+    let _res = input.read_to_string(&mut buf);
+    buf
+        .split("\n\n")
+        .map(|elve|
+        {
+            elve.lines().map(|x| x.parse::<usize>().unwrap()).sum()
+        })
+        .max().unwrap()
 }
 
-pub fn star_two(input: impl BufRead) -> usize {
-    input
-        .lines()
-        .map(|x| x.unwrap().parse::<usize>().unwrap())
-        .tuple_windows::<(_, _, _)>()
-        .map(|(a, b, c)| a + b + c)
-        .tuple_windows()
-        .filter(|(a, b)| b > a)
-        .count()
+pub fn star_two(mut input: impl BufRead) -> usize {
+    let mut buf = String::new();
+    let _res = input.read_to_string(&mut buf);
+    let mut elves = buf
+        .split("\n\n")
+        .map(|elve|
+        {
+            elve.lines().map(|x| x.parse::<usize>().unwrap()).sum()
+        }).collect::<Vec<_>>();
+    elves.sort();
+    elves.iter().rev().take(3).sum()
 }
 
 #[cfg(test)]
@@ -29,39 +32,47 @@ mod tests {
 
     #[test]
     fn test_star_one() {
-        //         assert_eq!(
-        //             star_one(Cursor::new(
-        //                 b"199
-        // 200
-        // 208
-        // 210
-        // 200
-        // 207
-        // 240
-        // 269
-        // 260
-        // 263"
-        //             )),
-        //             7
-        //         );
+                assert_eq!(
+                    star_one(Cursor::new(
+                        b"1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000"
+                    )),
+                    24000
+                );
     }
 
     #[test]
     fn test_star_two() {
-        //         assert_eq!(
-        //             star_two(Cursor::new(
-        //                 b"199
-        // 200
-        // 208
-        // 210
-        // 200
-        // 207
-        // 240
-        // 269
-        // 260
-        // 263"
-        //             )),
-        //             5
-        //         );
+                assert_eq!(
+                    star_two(Cursor::new(
+                        b"1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000"
+                    )),
+                    45000
+                );
     }
 }
