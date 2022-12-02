@@ -1,17 +1,31 @@
 use std::io::BufRead;
 
 pub fn star_one(mut input: impl BufRead) -> usize {
-  let datat = input.lines().map(|line| line.unwrap()).map(|line| line.split_once(' ')).map(|s| s.unwrap()).map(|(a, b)| {
-    match a {
-      "A" => match b {
-        "X" => 3 + 0,
-        "Y" => 8,
-        "Z" => todo!(),
-      }
-      x => panic!("{}", x)
-    }
-  });
-  0
+    let data = input.lines().map(|line| line.unwrap()).map(|line| {
+        let (a, b) = line.split_once(' ').unwrap();
+        match a {
+            "A" => match b {
+                "X" => 1 + 3,
+                "Y" => 2 + 6,
+                "Z" => 3 + 0,
+                x => panic!("B didnt match: {}", b),
+            },
+            "B" => match b {
+                "X" => 1 + 0,
+                "Y" => 2 + 3,
+                "Z" => 3 + 6,
+                x => panic!("B didnt match: {}", b),
+            },
+            "C" => match b {
+                "X" => 1 + 6,
+                "Y" => 2 + 0,
+                "Z" => 3 + 3,
+                x => panic!("B didnt match: {}", b),
+            },
+            x => panic!("{}", x),
+        }
+    });
+    data.sum()
     // let mut buf = String::new();
     // let _res = input.read_to_string(&mut buf);
     // buf.split("\n\n")
@@ -21,8 +35,8 @@ pub fn star_one(mut input: impl BufRead) -> usize {
 }
 
 pub fn star_two(mut input: impl BufRead) -> usize {
-  todo!()
-  // input.lines().split()
+    todo!()
+    // input.lines().split()
     // let mut buf = String::new();
     // let _res = input.read_to_string(&mut buf);
     // let mut elves = buf
@@ -52,11 +66,6 @@ C Z"
 
     #[test]
     fn test_star_two() {
-        assert_eq!(
-            star_two(Cursor::new(
-                b""
-            )),
-            45000
-        );
+        assert_eq!(star_two(Cursor::new(b"")), 45000);
     }
 }
