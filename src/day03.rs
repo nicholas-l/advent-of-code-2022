@@ -50,7 +50,11 @@ pub fn star_two(input: impl BufRead) -> String {
 
     // data.sort_by_key(|possible_badges| possible_badges.len());
 
-    data.iter().flatten().map(get_priority).sum::<usize>().to_string()
+    data.iter()
+        .flatten()
+        .map(get_priority)
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]

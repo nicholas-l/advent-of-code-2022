@@ -1,5 +1,5 @@
-use std::io::BufRead;
 use regex::Regex;
+use std::io::BufRead;
 
 pub fn star_one(mut input: impl BufRead) -> String {
     let mut buf = String::new();
@@ -12,7 +12,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
         .next()
         .map(|l| {
             l.chars()
-                .filter(|c| c.is_digit(10))
+                .filter(|c| c.is_ascii_digit())
                 .map(|_| Vec::<char>::new())
                 .collect::<Vec<_>>()
         })
@@ -30,7 +30,9 @@ pub fn star_one(mut input: impl BufRead) -> String {
 
     for line in moves.lines() {
         //move 1 from 2 to 1
-        let cap = re.captures(line).unwrap_or_else(|| panic!("Did not match '{}'", line));
+        let cap = re
+            .captures(line)
+            .unwrap_or_else(|| panic!("Did not match '{}'", line));
         println!("{:?}", cap);
         let count = cap[1].parse::<usize>().unwrap();
         let from_stack = cap[2].parse::<usize>().unwrap();
@@ -38,14 +40,13 @@ pub fn star_one(mut input: impl BufRead) -> String {
         for _i in 0..count {
             let container = stacks[from_stack - 1].pop().unwrap();
             stacks[to_stack - 1].push(container);
-
         }
-
     }
 
-    stacks.into_iter().map(|stack|  {
-        stack.last().unwrap().to_owned()
-    }).collect()
+    stacks
+        .into_iter()
+        .map(|stack| stack.last().unwrap().to_owned())
+        .collect()
 }
 
 pub fn star_two(mut input: impl BufRead) -> String {
@@ -59,7 +60,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
         .next()
         .map(|l| {
             l.chars()
-                .filter(|c| c.is_digit(10))
+                .filter(|c| c.is_ascii_digit())
                 .map(|_| Vec::<char>::new())
                 .collect::<Vec<_>>()
         })
@@ -77,7 +78,9 @@ pub fn star_two(mut input: impl BufRead) -> String {
 
     for line in moves.lines() {
         //move 1 from 2 to 1
-        let cap = re.captures(line).unwrap_or_else(|| panic!("Did not match '{}'", line));
+        let cap = re
+            .captures(line)
+            .unwrap_or_else(|| panic!("Did not match '{}'", line));
         println!("{:?}", cap);
         let count = cap[1].parse::<usize>().unwrap();
         let from_stack = cap[2].parse::<usize>().unwrap();
@@ -90,12 +93,12 @@ pub fn star_two(mut input: impl BufRead) -> String {
         for container in tmp.into_iter().rev() {
             stacks[to_stack - 1].push(container);
         }
-
     }
 
-    stacks.into_iter().map(|stack| {
-        stack.last().unwrap().to_owned()
-    }).collect()
+    stacks
+        .into_iter()
+        .map(|stack| stack.last().unwrap().to_owned())
+        .collect()
 }
 
 #[cfg(test)]

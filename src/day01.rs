@@ -4,7 +4,11 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut buf = String::new();
     let _res = input.read_to_string(&mut buf);
     buf.split("\n\n")
-        .map(|elve| elve.lines().map(|x| x.parse::<usize>().unwrap()).sum::<usize>())
+        .map(|elve| {
+            elve.lines()
+                .map(|x| x.parse::<usize>().unwrap())
+                .sum::<usize>()
+        })
         .max()
         .unwrap()
         .to_string()
