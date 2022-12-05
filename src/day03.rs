@@ -9,7 +9,7 @@ fn get_priority(c: &char) -> usize {
     *c as usize - offset
 }
 
-pub fn star_one(input: impl BufRead) -> usize {
+pub fn star_one(input: impl BufRead) -> String {
     let data = input.lines().map(|line| line.unwrap()).map(|line| {
         let (first, last) = line.split_at(line.len() / 2);
         let first_set: HashSet<char> = HashSet::from_iter(first.chars());
@@ -20,10 +20,10 @@ pub fn star_one(input: impl BufRead) -> usize {
             .map(get_priority)
             .sum::<usize>()
     });
-    data.sum()
+    data.sum::<usize>().to_string()
 }
 
-pub fn star_two(input: impl BufRead) -> usize {
+pub fn star_two(input: impl BufRead) -> String {
     let data = input
         .lines()
         .map(|line| line.unwrap())
@@ -50,7 +50,7 @@ pub fn star_two(input: impl BufRead) -> usize {
 
     // data.sort_by_key(|possible_badges| possible_badges.len());
 
-    data.iter().flatten().map(get_priority).sum()
+    data.iter().flatten().map(get_priority).sum::<usize>().to_string()
 }
 
 #[cfg(test)]
@@ -69,7 +69,7 @@ wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw"
             )),
-            157
+            "157"
         );
     }
 
@@ -84,7 +84,7 @@ wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw"
             )),
-            70
+            "70"
         );
     }
 }

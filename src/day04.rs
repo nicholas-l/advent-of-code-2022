@@ -9,7 +9,7 @@ fn range_overlaps(first: &(usize, usize), second: &(usize, usize)) -> bool {
     first.0 >= second.0 && first.0 <= second.1 || second.0 >= first.0 && second.0 <= first.1
 }
 
-pub fn star_one(input: impl BufRead) -> usize {
+pub fn star_one(input: impl BufRead) -> String {
     let data = input
         .lines()
         .map(|line| line.unwrap())
@@ -34,10 +34,10 @@ pub fn star_one(input: impl BufRead) -> usize {
             (first_range, second_range)
         })
         .filter(|(first, second)| range_contains(first, second) || range_contains(second, first));
-    data.count()
+    data.count().to_string()
 }
 
-pub fn star_two(input: impl BufRead) -> usize {
+pub fn star_two(input: impl BufRead) -> String {
     let data = input
         .lines()
         .map(|line| line.unwrap())
@@ -62,7 +62,7 @@ pub fn star_two(input: impl BufRead) -> usize {
             (first_range, second_range)
         })
         .filter(|(first, second)| range_overlaps(first, second) || range_overlaps(second, first));
-    data.count()
+    data.count().to_string()
 }
 
 #[cfg(test)]
@@ -81,7 +81,7 @@ mod tests {
 6-6,4-6
 2-6,4-8"
             )),
-            2
+            "2"
         );
     }
 
@@ -96,7 +96,7 @@ mod tests {
 6-6,4-6
 2-6,4-8"
             )),
-            4
+            "4"
         );
     }
 }

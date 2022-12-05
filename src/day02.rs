@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-pub fn star_one(input: impl BufRead) -> usize {
+pub fn star_one(input: impl BufRead) -> String {
     let data = input.lines().map(|line| line.unwrap()).map(|line| {
         let (a, b) = line.split_once(' ').unwrap();
         match a {
@@ -25,10 +25,10 @@ pub fn star_one(input: impl BufRead) -> usize {
             x => panic!("{}", x),
         }
     });
-    data.sum()
+    data.sum::<usize>().to_string()
 }
 
-pub fn star_two(input: impl BufRead) -> usize {
+pub fn star_two(input: impl BufRead) -> String {
     let data = input
         .lines()
         .map(|line| line.unwrap())
@@ -80,7 +80,7 @@ pub fn star_two(input: impl BufRead) -> usize {
                 x => panic!("{}", x),
             }
         });
-    data.sum()
+    data.sum::<usize>().to_string()
 }
 
 #[cfg(test)]
@@ -96,7 +96,7 @@ mod tests {
 B X
 C Z"
             )),
-            15
+            "15"
         );
     }
 
@@ -108,7 +108,7 @@ C Z"
 B X
 C Z"
             )),
-            12
+            "12"
         );
     }
 }

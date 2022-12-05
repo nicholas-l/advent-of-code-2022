@@ -1,15 +1,16 @@
 use std::io::BufRead;
 
-pub fn star_one(mut input: impl BufRead) -> usize {
+pub fn star_one(mut input: impl BufRead) -> String {
     let mut buf = String::new();
     let _res = input.read_to_string(&mut buf);
     buf.split("\n\n")
-        .map(|elve| elve.lines().map(|x| x.parse::<usize>().unwrap()).sum())
+        .map(|elve| elve.lines().map(|x| x.parse::<usize>().unwrap()).sum::<usize>())
         .max()
         .unwrap()
+        .to_string()
 }
 
-pub fn star_two(mut input: impl BufRead) -> usize {
+pub fn star_two(mut input: impl BufRead) -> String {
     let mut buf = String::new();
     let _res = input.read_to_string(&mut buf);
     let mut elves = buf
@@ -17,7 +18,7 @@ pub fn star_two(mut input: impl BufRead) -> usize {
         .map(|elve| elve.lines().map(|x| x.parse::<usize>().unwrap()).sum())
         .collect::<Vec<_>>();
     elves.sort();
-    elves.iter().rev().take(3).sum()
+    elves.iter().rev().take(3).sum::<usize>().to_string()
 }
 
 #[cfg(test)]
@@ -44,7 +45,7 @@ mod tests {
 
 10000"
             )),
-            24000
+            "24000"
         );
     }
 
@@ -67,7 +68,7 @@ mod tests {
 
 10000"
             )),
-            45000
+            "45000"
         );
     }
 }

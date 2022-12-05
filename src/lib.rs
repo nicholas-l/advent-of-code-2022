@@ -8,8 +8,9 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 
-type DayFn = fn(Box<dyn BufRead>) -> usize;
+type DayFn = fn(Box<dyn BufRead>) -> String;
 
 pub fn get_day(day: usize) -> (DayFn, DayFn, PathBuf) {
     match day {
@@ -49,6 +50,15 @@ pub fn get_day(day: usize) -> (DayFn, DayFn, PathBuf) {
             )
         }
 
+        5 => {
+            use day05::{star_one, star_two};
+            (
+                star_one as DayFn,
+                star_two as DayFn,
+                Path::new("data").join("day05.txt"),
+            )
+        }
+
         x => {
             unimplemented!("Have not implemented day {}", x);
         }
@@ -72,32 +82,40 @@ mod tests {
     #[test]
     fn day01_complete() {
         let (star_one, star_two, filepath) = get_day(1);
-        assert_eq!(star_one(get_data(&filepath)), 69528);
+        assert_eq!(star_one(get_data(&filepath)), "69528");
 
-        assert_eq!(star_two(get_data(&filepath)), 206152);
+        assert_eq!(star_two(get_data(&filepath)), "206152");
     }
 
     #[test]
     fn day02_complete() {
         let (star_one, star_two, filepath) = get_day(2);
-        assert_eq!(star_one(get_data(&filepath)), 12645);
+        assert_eq!(star_one(get_data(&filepath)), "12645");
 
-        assert_eq!(star_two(get_data(&filepath)), 11756);
+        assert_eq!(star_two(get_data(&filepath)), "11756");
     }
 
     #[test]
     fn day03_complete() {
         let (star_one, star_two, filepath) = get_day(3);
-        assert_eq!(star_one(get_data(&filepath)), 8298);
+        assert_eq!(star_one(get_data(&filepath)), "8298");
 
-        assert_eq!(star_two(get_data(&filepath)), 2708);
+        assert_eq!(star_two(get_data(&filepath)), "2708");
     }
 
     #[test]
     fn day04_complete() {
         let (star_one, star_two, filepath) = get_day(4);
-        assert_eq!(star_one(get_data(&filepath)), 466);
+        assert_eq!(star_one(get_data(&filepath)), "466");
 
-        assert_eq!(star_two(get_data(&filepath)), 865);
+        assert_eq!(star_two(get_data(&filepath)), "865");
+    }
+
+    #[test]
+    fn day05_complete() {
+        let (star_one, star_two, filepath) = get_day(5);
+        assert_eq!(star_one(get_data(&filepath)), "GFTNRBZPF");
+
+        assert_eq!(star_two(get_data(&filepath)), "VRQWPDSGP");
     }
 }
