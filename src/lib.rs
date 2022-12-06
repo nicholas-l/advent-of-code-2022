@@ -9,6 +9,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
 type DayFn = fn(Box<dyn BufRead>) -> String;
 
@@ -56,6 +57,15 @@ pub fn get_day(day: usize) -> (DayFn, DayFn, PathBuf) {
                 star_one as DayFn,
                 star_two as DayFn,
                 Path::new("data").join("day05.txt"),
+            )
+        }
+
+        6 => {
+            use day06::{star_one, star_two};
+            (
+                star_one as DayFn,
+                star_two as DayFn,
+                Path::new("data").join("day06.txt"),
             )
         }
 
@@ -117,5 +127,13 @@ mod tests {
         assert_eq!(star_one(get_data(&filepath)), "GFTNRBZPF");
 
         assert_eq!(star_two(get_data(&filepath)), "VRQWPDSGP");
+    }
+
+    #[test]
+    fn day06_complete() {
+        let (star_one, star_two, filepath) = get_day(6);
+        assert_eq!(star_one(get_data(&filepath)), "1140");
+
+        assert_eq!(star_two(get_data(&filepath)), "3495");
     }
 }
