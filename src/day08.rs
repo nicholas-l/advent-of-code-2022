@@ -1,6 +1,5 @@
 use std::io::BufRead;
 
-
 /// Not a scalable solution but does the job.
 
 pub fn star_one(mut input: impl BufRead) -> String {
