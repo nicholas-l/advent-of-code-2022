@@ -56,29 +56,26 @@ pub fn star_two(input: impl BufRead) -> String {
                 x => panic!("{}", x),
             }
         })
-        .map(|(a, b)| {
-            println!("{} {}", a, b);
-            match a {
-                "A" => match b {
-                    "A" => 1 + 3,
-                    "B" => 2 + 6,
-                    "C" => 3,
-                    x => panic!("B didnt match: {}", x),
-                },
-                "B" => match b {
-                    "A" => 1,
-                    "B" => 2 + 3,
-                    "C" => 3 + 6,
-                    x => panic!("B didnt match: {}", x),
-                },
-                "C" => match b {
-                    "A" => 1 + 6,
-                    "B" => 2,
-                    "C" => 3 + 3,
-                    x => panic!("B didnt match: {}", x),
-                },
-                x => panic!("{}", x),
-            }
+        .map(|(a, b)| match a {
+            "A" => match b {
+                "A" => 1 + 3,
+                "B" => 2 + 6,
+                "C" => 3,
+                x => panic!("B didnt match: {}", x),
+            },
+            "B" => match b {
+                "A" => 1,
+                "B" => 2 + 3,
+                "C" => 3 + 6,
+                x => panic!("B didnt match: {}", x),
+            },
+            "C" => match b {
+                "A" => 1 + 6,
+                "B" => 2,
+                "C" => 3 + 3,
+                x => panic!("B didnt match: {}", x),
+            },
+            x => panic!("{}", x),
         });
     data.sum::<usize>().to_string()
 }

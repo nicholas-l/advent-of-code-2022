@@ -131,7 +131,6 @@ pub fn star_one(mut input: impl BufRead) -> String {
     visit(&root)
         .iter()
         .map(|dir| ((*dir).as_ref().borrow().get_name(), get_directory_size(dir)))
-        .inspect(|d| println!("{:?}", d))
         .filter(|x| x.1 <= 100_000)
         .map(|x| x.1)
         .sum::<usize>()

@@ -33,7 +33,6 @@ pub fn star_one(mut input: impl BufRead) -> String {
         let cap = re
             .captures(line)
             .unwrap_or_else(|| panic!("Did not match '{}'", line));
-        println!("{:?}", cap);
         let count = cap[1].parse::<usize>().unwrap();
         let from_stack = cap[2].parse::<usize>().unwrap();
         let to_stack = cap[3].parse::<usize>().unwrap();
@@ -81,7 +80,6 @@ pub fn star_two(mut input: impl BufRead) -> String {
         let cap = re
             .captures(line)
             .unwrap_or_else(|| panic!("Did not match '{}'", line));
-        println!("{:?}", cap);
         let count = cap[1].parse::<usize>().unwrap();
         let from_stack = cap[2].parse::<usize>().unwrap();
         let to_stack = cap[3].parse::<usize>().unwrap();
