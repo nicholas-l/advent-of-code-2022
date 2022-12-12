@@ -18,7 +18,7 @@ regex = "1.4.2"
 # slab = "0.4.3"
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.4"
 
 [[bench]]
 name = "benchmark"
