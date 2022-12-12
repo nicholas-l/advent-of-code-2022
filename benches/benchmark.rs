@@ -3,16 +3,16 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
     for i in get_days() {
-        let (day1, day2, path) = get_day(i);
+        let (part1, part2, path) = get_day(i);
         c.bench_function(&format!("day {} A", i), |b| {
             b.iter(|| {
-                day1(get_data(&path));
+                part1(get_data(&path));
             })
         });
 
         c.bench_function(&format!("day {} B", i), |b| {
             b.iter(|| {
-                day2(get_data(&path));
+                part2(get_data(&path));
             })
         });
     }

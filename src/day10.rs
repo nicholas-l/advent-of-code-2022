@@ -10,20 +10,20 @@ pub fn star_one(mut input: impl BufRead) -> String {
 
     for line in buf.lines() {
         match line.split_once(' ') {
-            Some((addx, amount)) => {
+            Some((_addx, amount)) => {
                 for _ in 0..2 {
                     if i > 19 && (i - 20) % 40 == 0 {
-                        println!("addx {} * {}: {} ({} {})", i, x, i * x, addx, amount);
+                        // println!("addx {} * {}: {} ({} {})", i, x, i * x, addx, amount);
                         signal_strengths += i * x
                     }
                     i += 1;
                 }
-                println!("Adding {} to {}", amount, x);
+                // println!("Adding {} to {}", amount, x);
                 x += amount.parse::<isize>().unwrap();
             }
             None => {
                 if i > 19 && (i - 20) % 40 == 0 {
-                    println!("noop {} * {}: {}", i, x, i * x);
+                    // println!("noop {} * {}: {}", i, x, i * x);
                     signal_strengths += i * x
                 }
                 i += 1;
@@ -52,7 +52,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
                     }
                     i += 1;
                 }
-                println!("Adding {} to {}", amount, x);
+                // println!("Adding {} to {}", amount, x);
                 x += amount.parse::<isize>().unwrap();
             }
             None => {
