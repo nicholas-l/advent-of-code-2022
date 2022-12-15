@@ -5,7 +5,7 @@ fn parse_input(buf: String) -> ((isize, isize), Vec<(Coord, Coord)>) {
     let meta = lines
         .next()
         .map(|l| {
-            let (row, max_search) = l.split_once(" ").unwrap();
+            let (row, max_search) = l.split_once(' ').unwrap();
             (
                 row.parse::<isize>().unwrap(),
                 max_search.parse::<isize>().unwrap(),
@@ -14,7 +14,7 @@ fn parse_input(buf: String) -> ((isize, isize), Vec<(Coord, Coord)>) {
         .unwrap();
     let lists = lines
         .map(|line| {
-            let (sensor_input, beacon_input) = line.split_once(":").unwrap();
+            let (sensor_input, beacon_input) = line.split_once(':').unwrap();
             let sensor = {
                 let (x_input, y_input) = sensor_input.split_once(',').unwrap();
                 (
@@ -153,8 +153,8 @@ impl Map {
     }
 
     fn add_sensor_beacon(&mut self, sensor: Coord, beacon: Coord, row: isize) {
-        self.positions.insert(sensor.clone(), Position::Sensor);
-        self.positions.insert(beacon.clone(), Position::Beacon);
+        self.positions.insert(sensor, Position::Sensor);
+        self.positions.insert(beacon, Position::Beacon);
 
         let max_distance = (sensor.0 - beacon.0).abs() + (sensor.1 - beacon.1).abs();
 
