@@ -160,14 +160,14 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let _res = input.read_to_string(&mut buf);
     let lists = parse_input(buf);
 
-    let mut map2 = Map::new(); // TODO
+    let mut map = Map::new(); // TODO
 
-    map2.add_rocks(lists);
-    println!("{}", map2);
+    map.add_rocks(lists);
+    // println!("{}", map2);
 
     let mut sand_units = 0;
     loop {
-        if SandPosition::Overflow == map2.add_sand() {
+        if SandPosition::Overflow == map.add_sand() {
             return sand_units.to_string();
         }
         sand_units += 1;
@@ -179,17 +179,17 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let _res = input.read_to_string(&mut buf);
     let lists = parse_input(buf);
 
-    let mut map2 = Map::new(); // TODO
+    let mut map = Map::new(); // TODO
 
-    map2.add_rocks(lists);
-    println!("{}", map2);
+    map.add_rocks(lists);
+    // println!("{}", map2);
 
-    map2.add_bottom(2);
+    map.add_bottom(2);
 
     let mut sand_units = 0;
     loop {
         sand_units += 1;
-        if SandPosition::Start == map2.add_sand() {
+        if SandPosition::Start == map.add_sand() {
             return sand_units.to_string();
         }
     }
