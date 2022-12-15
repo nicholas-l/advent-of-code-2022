@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Display, io::BufRead, ops::Add, time::SystemTime};
+use std::{collections::HashMap, fmt::Display, io::BufRead, ops::Add};
 
 fn parse_input(buf: String) -> ((isize, isize), Vec<(Coord, Coord)>) {
     let mut lines = buf.lines();
@@ -83,31 +83,10 @@ struct Map {
     max_y: Option<isize>,
     min_x: Option<isize>,
     max_x: Option<isize>,
-
-    min: Option<Coord>,
-    max: Option<Coord>,
-    spans: HashMap<isize, Vec<Span>>,
 }
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.min.is_some() {
-            for i in self.min.unwrap().0..=self.max.unwrap().0 {
-                for j in self.min.unwrap().0..=self.max.unwrap().0 {
-                    write!(
-                        f,
-                        "{}",
-                        self.spans[&i]
-                            .iter()
-                            .find(|span| span.start <= j && j <= span.end)
-                            .map(|_x| '#')
-                            .unwrap_or('.')
-                    )?;
-                }
-                writeln!(f)?;
-            }
-            return Ok(());
-        }
         for j in 0..=self.max_y.unwrap() {
             for i in self.min_x.unwrap_or(0)..=self.max_x.unwrap_or(0) {
                 let v = match self.positions.get(&(i, j)) {
@@ -132,17 +111,7 @@ impl Map {
             max_y: None,
             min_x: None,
             max_x: None,
-
-            min: None,
-            max: None,
-            spans: HashMap::new(),
         }
-    }
-
-    fn set_max_min(&mut self, min: Coord, max: Coord) {
-        self.min.replace(min);
-        self.max.replace(max);
-        let _res = self.spans.try_reserve(max.0 as usize - min.0 as usize);
     }
 
     fn not_beacon_row(&self, row: isize) -> usize {
@@ -177,34 +146,39 @@ impl Map {
             .map(|x| x.min(sensor.1 - max_distance))
             .or(Some(sensor.1 - max_distance));
     }
+}
 
-    fn add_sensor_beacon_set(&mut self, sensor: Coord, beacon: Coord) {
-        let max_distance = (sensor.0 - beacon.0).abs() + (sensor.1 - beacon.1).abs();
-        let max = self.max.unwrap();
-        let min = self.min.unwrap();
+pub fn star_one(mut input: impl BufRead) -> String {
+    let mut buf = String::new();
+    let _res = input.read_to_string(&mut buf);
+    let ((row, _), lists) = parse_input(buf);
 
-        for distance in 0..max_distance {
-            self.spans
-                .entry((sensor.0 + distance).min(max.0))
-                .or_insert_with(Vec::new)
-                .push(Span {
-                    start: sensor.1 - (max_distance - distance),
-                    end: sensor.1 + (max_distance - distance),
-                });
+    let mut map = Map::new();
 
-            self.spans
-                .entry((sensor.0 - distance).max(min.0))
-                .or_insert_with(Vec::new)
-                .push(Span {
-                    start: sensor.1 - (max_distance - distance),
-                    end: sensor.1 + (max_distance - distance),
-                });
+    for pair in lists {
+        map.add_sensor_beacon(pair.0, pair.1, row);
+    }
+
+    map.not_beacon_row(row).to_string()
+}
+
+struct Map2 {
+    min: Option<Coord>,
+    max: Option<Coord>,
+    spans: Vec<Vec<Span>>,
+}
+
+impl Map2 {
+    fn new_with_size(min: Coord, max: Coord) -> Map2 {
+        Map2 {
+            min: Some(min),
+            max: Some(max),
+            spans: (min.0..=max.0).map(|_| Vec::new()).collect(),
         }
     }
 
-    fn not_beacon_set(&mut self) -> Coord {
-        // Sort spans
-        for (_k, v) in self.spans.iter_mut() {
+    fn collapse_spans(&mut self) {
+        for v in self.spans.iter_mut() {
             v.sort_by_key(|span| span.start);
             let tmp = v.remove(0);
             let new_v = v.drain(..).fold(vec![tmp], |mut current, next| {
@@ -219,39 +193,64 @@ impl Map {
             });
             *v = new_v;
         }
+    }
 
-        println!("Finished collapsing");
+    fn not_beacon(&mut self) -> Coord {
+        self.collapse_spans();
 
-        for i in self.min.unwrap().0..=self.max.unwrap().0 {
-            let mut j = self.min.unwrap().1;
-            let spans = self.spans.get_mut(&i).unwrap();
-            for span in spans {
+        let max = self.max.unwrap();
+        let min = self.min.unwrap();
+
+        for i in min.0..=max.0 {
+            let mut j = min.1;
+            for span in &self.spans[i as usize] {
                 if span.start <= j && j <= span.end {
                     j = span.end + 1;
-                } else if j < self.max.unwrap().1 {
+                } else if j < max.1 {
                     return (i, j);
                 }
             }
         }
+        unreachable!()
+    }
 
-        panic!("Could not find beacon!");
+    fn add_sensor_beacon(&mut self, sensor: Coord, beacon: Coord) {
+        let max_distance = (sensor.0 - beacon.0).abs() + (sensor.1 - beacon.1).abs();
+        let max = self.max.unwrap_or((isize::MAX, isize::MAX));
+        let min = self.min.unwrap_or((isize::MIN, isize::MIN));
+
+        for distance in 0..max_distance {
+            self.spans[((sensor.0 + distance).min(max.0)) as usize].push(Span {
+                start: (sensor.1 - max_distance + distance).max(min.1),
+                end: (sensor.1 + max_distance - distance).min(max.1),
+            });
+
+            self.spans[((sensor.0 - distance).max(min.0)) as usize].push(Span {
+                start: (sensor.1 - max_distance + distance).max(min.1),
+                end: (sensor.1 + max_distance - distance).min(max.1),
+            });
+        }
     }
 }
 
-pub fn star_one(mut input: impl BufRead) -> String {
-    let mut buf = String::new();
-    let _res = input.read_to_string(&mut buf);
-    let ((row, _), lists) = parse_input(buf);
-
-    let mut map = Map::new();
-
-    for pair in lists {
-        map.add_sensor_beacon(pair.0, pair.1, row);
+impl Display for Map2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for i in self.min.unwrap().0..=self.max.unwrap().0 {
+            for j in self.min.unwrap().0..=self.max.unwrap().0 {
+                write!(
+                    f,
+                    "{}",
+                    self.spans[i as usize]
+                        .iter()
+                        .find(|span| span.start <= j && j <= span.end)
+                        .map(|_x| '#')
+                        .unwrap_or('.')
+                )?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
     }
-
-    println!("Star one: Finished creating map");
-
-    map.not_beacon_row(row).to_string()
 }
 
 pub fn star_two(mut input: impl BufRead) -> String {
@@ -259,30 +258,13 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let _res = input.read_to_string(&mut buf);
     let ((_row, max_search), lists) = parse_input(buf);
 
-    let mut map = Map::new();
-    let now = SystemTime::now();
-
-    map.set_max_min((0, 0), (max_search, max_search));
-
-    println!(
-        "Star two: Adding sensor data ({})",
-        now.elapsed().unwrap().as_secs()
-    );
+    let mut map = Map2::new_with_size((0, 0), (max_search, max_search));
 
     for pair in lists {
-        map.add_sensor_beacon_set(pair.0, pair.1);
+        map.add_sensor_beacon(pair.0, pair.1);
     }
-    println!(
-        "Star two: Finished creating map ({})",
-        now.elapsed().unwrap().as_secs()
-    );
 
-    let beacon = map.not_beacon_set();
-
-    println!(
-        "Star two: Found beacon ({})",
-        now.elapsed().unwrap().as_secs()
-    );
+    let beacon = map.not_beacon();
 
     (beacon.0 * 4000000 + beacon.1).to_string()
 }
