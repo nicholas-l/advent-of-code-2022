@@ -151,8 +151,8 @@ impl Cavern2 {
         }
     }
 
-    fn max_y(&self) -> isize {
-        *self.heights.iter().max().unwrap()
+    fn max_height(&self) -> isize {
+        *self.heights.iter().max().unwrap() + 1
     }
 
     fn place_rock(&mut self, rock: Rock) {
@@ -163,15 +163,15 @@ impl Cavern2 {
 
     fn relative_heights(&self) -> [isize; 7] {
         let mut heights = [0; 7];
-        let min = self.height();
+        let min = self.min_height();
         for i in 0..7 {
             heights[i] = self.heights[i] - min;
         }
         heights
     }
 
-    fn height(&self) -> isize {
-        self.heights.iter().max().unwrap() + 1
+    fn min_height(&self) -> isize {
+        self.heights.iter().min().unwrap() + 1
     }
 }
 
@@ -273,84 +273,46 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let mut seen = HashMap::new();
 
     while rock_count <= finish_rock_count {
-        if rock_count % 10_000_000 == 0 {
-            println!(
-                "{:.4}%",
-                rock_count as f64 / finish_rock_count as f64 * 100.0
-            );
-        }
         if let Some((seen_rock_count, seen_height)) =
             seen.get(&(cavern.relative_heights(), rock_index, command_index))
         {
-            println!("G: {:?}", &(&cavern, rock_index, command_index, rock_count));
             let delta_rock_count = dbg!(rock_count - seen_rock_count);
-            let delta_height = dbg!(cavern.height() - seen_height);
-
-            println!("{}", finish_rock_count - rock_count);
-
-            println!("{}", delta_rock_count);
+            let delta_height = dbg!(cavern.min_height() - seen_height);
 
             let d = dbg!((finish_rock_count - rock_count) / delta_rock_count);
-
-            println!(
-                "{} {} {}",
-                d as isize * delta_height,
-                cavern.height(),
-                seen_height
-            );
             while rock_count + delta_rock_count < finish_rock_count {
                 for height in cavern.heights.iter_mut() {
                     *height += d as isize * (delta_height + 1);
                 }
                 rock_count += d * delta_rock_count;
-                println!("{}", rock_count);
+                rock_count += 1;
             }
-            println!("H: {:?}", &(&cavern, rock_index, command_index, rock_count));
-            // break;
+            seen.clear();
         } else {
             seen.insert(
                 (cavern.relative_heights(), rock_index, command_index),
-                (rock_count, cavern.height()),
+                (rock_count, cavern.min_height()),
             );
         }
-        println!("{:?}", cavern);
-        println!(
-            "{:?}",
-            &(
-                cavern.relative_heights(),
-                rock_index,
-                command_index,
-                rock_count
-            )
-        );
         let mut rock = rock_types[rock_index].clone();
         let mut did_fall = true;
-        rock.set_current_position((2, cavern.max_y() as i64 + 4));
+        rock.set_current_position((2, cavern.max_height() as i64 + 3));
 
         while did_fall {
-            let command = &commands[command_index];
+            cavern.command(&mut rock, &commands[command_index]);
             command_index += 1;
             command_index %= commands.len();
 
-            cavern.command(&mut rock, command);
-            println!("1: {:?}: {} {:?}", rock, did_fall, command);
             did_fall = cavern.fall(&mut rock);
-            println!("2: {:?}: {}", rock, did_fall);
         }
-        println!("{:?}", cavern);
         cavern.place_rock(rock);
-        // cavern.max_y = cavern.max_y.max(rock.highest());
-        // println!("{:?}", rock);
-        // println!("{:?}", rock.positions().collect::<Vec<_>>());
-        // println!("{}", cavern);
 
         rock_count += 1;
         rock_index += 1;
         rock_index %= rock_types.len();
     }
-    // println!("{}", cavern);
 
-    cavern.height().to_string()
+    (cavern.max_height() + 1).to_string()
 }
 
 #[cfg(test)]
@@ -501,3 +463,5 @@ mod tests {
 // 1_300_332_225_922 low
 // 690_842_490_843
 // 1563085399432 ?
+// 1411042944771
+// 1563085399432
