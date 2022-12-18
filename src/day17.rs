@@ -49,9 +49,9 @@ impl Rock {
             cavern.positions.contains(&new_pos) || new_pos.0 < 0 || new_pos.0 >= 7
         }) {
             self.origin.0 += dir;
-            return true;
+            true
         } else {
-            return false;
+            false
         }
     }
 
@@ -63,9 +63,9 @@ impl Rock {
             // || self.origin.1 + p.1 - 1 == 0
         }) {
             self.origin.1 -= 1;
-            return true;
+            true
         } else {
-            return false;
+            false
         }
     }
 
@@ -133,10 +133,10 @@ impl Cavern2 {
                     .enumerate()
                     .any(|p| (p.0 as i64, *p.1 as i64) == new_pos)
         }) {
-            return false;
+            false
         } else {
             rock.origin.0 += dir;
-            return true;
+            true
         }
     }
 
@@ -144,10 +144,10 @@ impl Cavern2 {
         if rock.template.iter().any(|p| {
             self.heights[(rock.origin.0 + p.0) as usize] as i64 >= (rock.origin.1 + p.1 - 1)
         }) {
-            return false;
+            false
         } else {
             rock.origin.1 -= 1;
-            return true;
+            true
         }
     }
 
@@ -164,8 +164,8 @@ impl Cavern2 {
     fn relative_heights(&self) -> [isize; 7] {
         let mut heights = [0; 7];
         let min = self.min_height();
-        for i in 0..7 {
-            heights[i] = self.heights[i] - min;
+        for (i, height) in heights.iter_mut().enumerate() {
+            *height = self.heights[i] - min;
         }
         heights
     }
@@ -229,7 +229,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
 
         while did_fall {
             if let Some(command) = commands.next() {
-                rock.command(&cavern, &command);
+                rock.command(&cavern, command);
                 // println!("1: {:?}: {} {:?}", rock, did_fall, command);
             }
             did_fall = rock.fall(&cavern);
@@ -450,6 +450,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "not yet implemented"]
     fn test_star_two() {
         assert_eq!(
             star_two(Cursor::new(b">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>")),

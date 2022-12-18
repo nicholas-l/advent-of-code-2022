@@ -271,5 +271,3 @@ Valve JJ has flow rate=21; tunnel leads to valve II"
         );
     }
 }
-
-//3255950337485 - low
