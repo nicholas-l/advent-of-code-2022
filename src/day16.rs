@@ -65,14 +65,9 @@ pub fn star_one(mut input: impl BufRead) -> String {
     }]; // TODO Change to binary heap
 
     let mut max_pressure = 0;
-    let mut i = 0;
     let mut seen = HashSet::new();
 
     while let Some(state) = stack.pop() {
-        if i % 10000 == 0 {
-            println!("{} - {}", stack.len(), state.time_left);
-        }
-        i += 1;
         if seen.contains(&(state.room, state.time_left, state.pressure_released)) {
             continue;
         }
@@ -123,14 +118,9 @@ pub fn star_two(mut input: impl BufRead) -> String {
     }];
 
     let mut max_pressure = 0;
-    // let mut i = 0;
     let mut seen = HashSet::new();
 
     while let Some(state) = stack.pop() {
-        // if i % 100_000 == 0 {
-        //     println!("{} - {} - {}", stack.len(), state.time_left, max_pressure);
-        // }
-        // i += 1;
         if seen.contains(&(
             state.room,
             state.elephant,
