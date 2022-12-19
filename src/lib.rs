@@ -369,8 +369,8 @@ mod tests {
     #[test]
     fn day19_complete() {
         let (star_one, star_two, filepath) = get_day(19);
-        assert_eq!(star_one(get_data(&filepath)), "4364");
+        assert_eq!(star_one(get_data(&filepath)), "1081");
 
-        assert_eq!(star_two(get_data(&filepath)), "2508");
+        assert_eq!(star_two(get_data(&filepath)), "2415");
     }
 }
