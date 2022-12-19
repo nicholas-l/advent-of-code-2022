@@ -9,6 +9,7 @@ dependencies = [
  "cached",
  "criterion",
  "itertools",
+ "lazy_static",
  "nalgebra",
  "nom",
  "once_cell",
