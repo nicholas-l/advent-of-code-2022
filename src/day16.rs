@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BinaryHeap, HashMap, HashSet},
     io::BufRead,
 };
 
@@ -14,12 +14,25 @@ struct State<'a> {
     opened: HashSet<&'a str>,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 struct State2<'a> {
     room: &'a str,
     elephant: &'a str,
     time_left: usize,
     pressure_released: usize,
     opened: HashSet<&'a str>,
+}
+
+impl<'a> PartialOrd for State2<'a> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<'a> Ord for State2<'a> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.pressure_released.cmp(&other.pressure_released)
+    }
 }
 
 fn parse_input(buf: String) -> HashMap<String, (usize, Vec<String>)> {
@@ -109,13 +122,14 @@ pub fn star_two(mut input: impl BufRead) -> String {
 
     let map = parse_input(buf);
 
-    let mut stack = vec![State2 {
+    let mut stack = BinaryHeap::new();
+    stack.push(State2 {
         room: "AA",
         elephant: "AA",
         time_left: 26,
         pressure_released: 0,
         opened: HashSet::new(),
-    }];
+    });
 
     let mut max_pressure = 0;
     let mut seen = HashSet::new();
@@ -137,9 +151,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
         ));
 
         if state.time_left == 0 {
-            if max_pressure < state.pressure_released {
-                max_pressure = state.pressure_released;
-            }
+            max_pressure = max_pressure.max(state.pressure_released)
         } else {
             let (flow_rate, connected) = map
                 .get(state.room)
