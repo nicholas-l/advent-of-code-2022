@@ -42,9 +42,9 @@ pub fn star_one(mut input: impl BufRead) -> String {
         let (j2, x) = list.pop_front().unwrap();
         // assert_eq!(&x, d);
         if x.value() < 0 {
-            list.rotate_right(x.value().unsigned_abs() % list.len() as usize);
+            list.rotate_right(x.value().unsigned_abs() % list.len());
         } else {
-            list.rotate_left(x.value().unsigned_abs() % list.len() as usize);
+            list.rotate_left(x.value().unsigned_abs() % list.len());
         }
         list.push_front((j2, Coordinate::Moved(x.value())));
         // println!("{:?}", list);
@@ -89,7 +89,6 @@ pub fn star_two(mut input: impl BufRead) -> String {
             .enumerate(),
     );
     for _mix in 0..10 {
-
         for i in 0..coordinates.len() {
             let j = list
                 .iter()
@@ -103,14 +102,13 @@ pub fn star_two(mut input: impl BufRead) -> String {
             let (j2, x) = list.pop_front().unwrap();
             // assert_eq!(&x, d);
             if x.value() < 0 {
-                list.rotate_right(x.value().unsigned_abs() % list.len() as usize);
+                list.rotate_right(x.value().unsigned_abs() % list.len());
             } else {
-                list.rotate_left(x.value().unsigned_abs() % list.len() as usize);
+                list.rotate_left(x.value().unsigned_abs() % list.len());
             }
             list.push_front((j2, Coordinate::Moved(x.value())));
             // println!("{:?}", list);
         }
-    
     }
     // find 0
     let pos_0 = list
@@ -153,12 +151,12 @@ mod tests {
         assert_eq!(
             star_two(Cursor::new(
                 b"1
-        2
-        -3
-        3
-        -2
-        0
-        4"
+2
+-3
+3
+-2
+0
+4"
             )),
             "1623178306"
         );
