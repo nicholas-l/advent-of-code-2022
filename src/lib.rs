@@ -27,6 +27,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 
 type DayFn = fn(Box<dyn BufRead>) -> String;
 
@@ -212,6 +213,15 @@ pub fn get_day(day: usize) -> (DayFn, DayFn, PathBuf) {
             )
         }
 
+        21 => {
+            use day21::{star_one, star_two};
+            (
+                star_one as DayFn,
+                star_two as DayFn,
+                Path::new("data").join("day21.txt"),
+            )
+        }
+
         x => {
             unimplemented!("Have not implemented day {}", x);
         }
@@ -389,6 +399,16 @@ mod tests {
         let (star_one, star_two, filepath) = get_day(20);
         assert_eq!(star_one(get_data(&filepath)), "2827");
 
+        assert_eq!(star_two(get_data(&filepath)), "7834270093909");
+    }
+
+    #[test]
+    fn day21_complete() {
+        let (star_one, star_two, filepath) = get_day(21);
+        assert_eq!(star_one(get_data(&filepath)), "194058098264286");
+
+        //65300000
+        //194058098264286
         assert_eq!(star_two(get_data(&filepath)), "7834270093909");
     }
 }
