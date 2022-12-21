@@ -128,11 +128,15 @@ impl Equation {
     fn print(&self, equations: &HashMap<String, Equation>) -> String {
         if let Some(op) = &self.1 {
             let right = self.2.as_ref().unwrap();
-            format!("{} {} {}", self.0.print(equations), op.print(), right.print(equations))
+            format!(
+                "{} {} {}",
+                self.0.print(equations),
+                op.print(),
+                right.print(equations)
+            )
         } else {
-            format!("{}", self.0.print(equations))
+            self.0.print(equations)
         }
-        
     }
 }
 
@@ -159,12 +163,16 @@ fn simplify(
                 equation.2 = None;
             } else if !constants.contains_key(name) {
                 if let Token::Symbol(s) = &equation.0 {
-                    if let Some(value) =  constants.get(s) {
+                    if let Some(value) = constants.get(s) {
+                        changed = true;
+
                         equation.0 = Token::Value(*value);
                     }
                 }
                 if let Some(Token::Symbol(s)) = &equation.2 {
-                    if let Some(value) =  constants.get(s) {
+                    if let Some(value) = constants.get(s) {
+                        changed = true;
+
                         equation.2 = Some(Token::Value(*value));
                     }
                 }
@@ -218,13 +226,12 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let mut equations = simplify(equations, ignore);
 
     // println!("{:#?}", equations);
-    // println!("{}", equations.get("root").unwrap().print(&equations));
+    println!("{}", equations.get("root").unwrap().print(&equations));
     // panic!();
 
     //print equation
 
-
-    for i in 7_007_400_000.. {
+    for i in 8317000000.. {
         if i % 100_000 == 0 {
             println!("{}", i);
         }
