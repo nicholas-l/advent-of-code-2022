@@ -407,8 +407,6 @@ mod tests {
         let (star_one, star_two, filepath) = get_day(21);
         assert_eq!(star_one(get_data(&filepath)), "194058098264286");
 
-        //65300000
-        //194058098264286
-        assert_eq!(star_two(get_data(&filepath)), "7834270093909");
+        assert_eq!(star_two(get_data(&filepath)), "3592056845086");
     }
 }

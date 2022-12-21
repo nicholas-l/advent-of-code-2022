@@ -231,7 +231,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
 
     //print equation
 
-    for i in 8317000000.. {
+    for i in 8317900000.. {
         if i % 100_000 == 0 {
             println!("{}", i);
         }
