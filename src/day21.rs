@@ -172,6 +172,14 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
                     equation.1 = None;
                     equation.2 = None;
                 } else if let Token::Symbol(s) = &equations.get(&name).unwrap().0 {
+                    if equations.get(&name).unwrap().2.is_none() {
+                        let child_equation = equations.get(s).unwrap().clone();
+                        let equation = equations.get_mut(&name).unwrap();
+                        equation.0 = child_equation.0.clone();
+                        equation.1 = child_equation.1.clone();
+                        equation.2 = child_equation.2.clone();
+                    }
+                } else if let Token::Symbol(s) = &equations.get(&name).unwrap().0 {
                     if let Some(value) = constants.get(s) {
                         changed = true;
                         changed_all = true;
@@ -183,15 +191,6 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
                         changed = true;
                         changed_all = true;
                         equations.get_mut(&name).unwrap().2 = Some(Token::Value(*value));
-                    }
-                }
-                if let Token::Symbol(s) = &equations.get(&name).unwrap().0 {
-                    if equations.get(&name).unwrap().2.is_none() {
-                        let child_equation = equations.get(s).unwrap().clone();
-                        let equation = equations.get_mut(&name).unwrap();
-                        equation.0 = child_equation.0.clone();
-                        equation.1 = child_equation.1.clone();
-                        equation.2 = child_equation.2.clone();
                     }
                 }
             }
