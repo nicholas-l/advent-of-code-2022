@@ -52,12 +52,12 @@ impl Command {
     }
 }
 
-enum Direction {
-    Up,
-    Right,
-    Down,
-    Left,
-}
+// enum Direction {
+//     Up,
+//     Right,
+//     Down,
+//     Left,
+// }
 
 struct Map {
     positions: HashMap<Coord, bool>,
@@ -172,7 +172,7 @@ fn parse_input(buf: &str) -> (Map, Vec<Command>) {
     };
     (map, path)
 }
-        
+
 pub fn star_one(mut input: impl BufRead) -> String {
     let mut buf = String::new();
     let _res = input.read_to_string(&mut buf);
@@ -227,8 +227,9 @@ mod tests {
 
     #[test]
     fn test_star_two() {
-        assert_eq!(star_two(Cursor::new(
-            b"        ...#
+        assert_eq!(
+            star_two(Cursor::new(
+                b"        ...#
         .#..
         #...
         ....
@@ -242,6 +243,8 @@ mod tests {
         ......#.
 
 10R5L5R10L4R5L5"
-        )), "5031");
+            )),
+            "5031"
+        );
     }
 }
