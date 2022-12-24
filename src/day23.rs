@@ -188,19 +188,13 @@ pub fn star_one(mut input: impl BufRead) -> String {
         Direction::West,
         Direction::East,
     ];
-    println!("{}", map);
 
     for i in 0..10 {
         step(&mut map, &directions, i);
-        // println!("{}", map);
-        // break;
     }
 
     let bounds = map.bounds();
-    println!("{:?}", map.elves);
-    println!("{:?}", bounds);
 
-    println!("{}", map);
     (bounds.0..=bounds.1)
         .map(|i| {
             (bounds.2..=bounds.3)
@@ -222,7 +216,6 @@ pub fn star_two(mut input: impl BufRead) -> String {
         Direction::West,
         Direction::East,
     ];
-    // println!("{}", map);
 
     let mut i = 0;
 
@@ -271,7 +264,3 @@ mod tests {
         );
     }
 }
-
-//4257 too high
-// 4091 too low
-// 1035
