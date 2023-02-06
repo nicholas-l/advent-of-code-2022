@@ -29,7 +29,7 @@ impl Command {
                         2 => (curr_pos.0, curr_pos.1 - 1),
                         // Up
                         3 => (curr_pos.0 - 1, curr_pos.1),
-                        x => panic!("Direction is not valid ({})", x),
+                        x => panic!("Direction is not valid ({x})"),
                     };
                     curr_pos = match map.positions.get(&next_position) {
                         Some(true) => next_position, // Valid move
@@ -95,7 +95,7 @@ impl Map {
             1 => (self.get_top_most(position.1), position.1),
             2 => (position.0, self.get_right_most(position.0)),
             3 => (self.get_bottom_most(position.1), position.1),
-            x => panic!("Invalid direction: {}", x),
+            x => panic!("Invalid direction: {x}"),
         }
     }
 }
@@ -130,7 +130,7 @@ fn parse_input(buf: &str) -> (Map, Vec<Command>) {
                                 .drain(..)
                                 .collect::<String>()
                                 .parse::<isize>()
-                                .unwrap_or_else(|_e| panic!("{:?}", digits)),
+                                .unwrap_or_else(|_e| panic!("{digits:?}")),
                         ));
                     }
                     path.push(Command::Left);

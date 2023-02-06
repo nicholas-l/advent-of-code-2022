@@ -193,7 +193,7 @@ impl Display for Map {
         for i in self.bounds.0..=self.bounds.1 {
             for j in self.bounds.2..=self.bounds.3 {
                 match self.positions.get(&(i, j)) {
-                    Some(v) => write!(f, "{}", v)?,
+                    Some(v) => write!(f, "{v}")?,
                     None => write!(f, ".")?,
                 }
             }
@@ -295,14 +295,14 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut states = HashSet::new();
     states.insert(state);
 
-    println!("{:?}", states);
-    println!("{}", map);
+    println!("{states:?}");
+    println!("{map}");
     println!("{:?}", map.bounds);
     println!("{:?}", map.end);
 
     for t in 0.. {
         if states.iter().any(|state| state.current_position == map.end) {
-            println!("{}", map);
+            // println!("{map}");
             return t.to_string();
         }
         // println!("Minute {}", t + 1);
@@ -330,8 +330,8 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let mut states = HashSet::new();
     states.insert(state);
 
-    println!("{:?}", states);
-    println!("{}", map);
+    println!("{states:?}");
+    println!("{map}");
     println!("{:?}", map.bounds);
     println!("{:?}", map.end);
 

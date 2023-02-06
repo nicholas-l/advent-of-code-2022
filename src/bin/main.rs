@@ -13,7 +13,7 @@ fn main() {
         args
     };
     for day in days {
-        println!("Day {}:", day);
+        println!("Day {day}:");
 
         let (star_one, star_two, filename) = get_day(day.parse::<usize>().unwrap());
         let f = fs::File::open(&filename).unwrap();

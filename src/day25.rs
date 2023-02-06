@@ -30,7 +30,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut total: isize = numbers.iter().sum();
     let mut v = Vec::new();
 
-    println!("{}", total);
+    // println!("{total}");
 
     while total > 0 {
         let c = match total % 5 {

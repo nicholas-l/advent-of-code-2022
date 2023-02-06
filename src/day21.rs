@@ -19,7 +19,7 @@ impl Operation {
             "*" => Operation::Multiply,
             "-" => Operation::Subtract,
             "/" => Operation::Divide,
-            x => panic!("Found {}", x),
+            x => panic!("Found {x}"),
         }
     }
 
@@ -228,7 +228,7 @@ fn rotate(equations: &mut HashMap<String, Equation>) -> bool {
         // Left hand side is constant so lets move values from right to left
         let (operation, token) = take_right_leaf(equations, "root").unwrap();
         let new_op = operation.inverse();
-        let new_key = format!("root-{}", v);
+        let new_key = format!("root-{v}");
         equations.get_mut("root").unwrap().0 = Token::Symbol(new_key.clone());
         equations.insert(
             new_key,
@@ -306,7 +306,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
 
     for i in 8317900000.. {
         if i % 100_000 == 0 {
-            println!("{}", i);
+            println!("{i}");
         }
         let human = equations.get_mut("humn").unwrap();
         human.0 = Token::Value(i);

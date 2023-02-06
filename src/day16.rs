@@ -44,7 +44,7 @@ fn parse_input(buf: String) -> HashMap<String, (usize, Vec<String>)> {
         let (name, flow_rate) = {
             let captures = input_re
                 .captures(input)
-                .unwrap_or_else(|| panic!("Could not parse {}", input));
+                .unwrap_or_else(|| panic!("Could not parse {input}"));
             (
                 captures[1].trim().to_string(),
                 captures[2].parse::<usize>().unwrap(),
@@ -53,7 +53,7 @@ fn parse_input(buf: String) -> HashMap<String, (usize, Vec<String>)> {
         let output_valves = {
             let captures = output_re
                 .captures(output)
-                .unwrap_or_else(|| panic!("Could not parse {}", input));
+                .unwrap_or_else(|| panic!("Could not parse {input}"));
             captures[1]
                 .split(',')
                 .map(|s| s.trim().to_string())

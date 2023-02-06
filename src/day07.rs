@@ -81,7 +81,7 @@ fn parse_lines(buf: String) -> Node {
                                 .iter()
                                 .find(|c| (*c.as_ref().borrow()).get_name() == x)
                                 .cloned()
-                                .unwrap_or_else(|| panic!("Tried to find: {}", x))
+                                .unwrap_or_else(|| panic!("Tried to find: {x}"))
                         }
                     },
                 }

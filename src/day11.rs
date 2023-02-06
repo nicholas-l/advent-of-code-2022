@@ -44,14 +44,14 @@ fn parse_monkeys(buf: String) -> Vec<Monkey> {
                 let (_, end) = lines[2].split_once(':').unwrap();
                 let capture = operation_regex
                     .captures(end)
-                    .unwrap_or_else(|| panic!("Could not find operation in {}", end));
+                    .unwrap_or_else(|| panic!("Could not find operation in {end}"));
                 assert_eq!(&capture[1], "old");
                 let op = match &capture[2] {
                     "+" => Operation::Addition,
                     "*" => Operation::Multiply,
                     "/" => Operation::Divide,
                     "-" => Operation::Subtract,
-                    x => panic!("Found unexpected operation: {}", x),
+                    x => panic!("Found unexpected operation: {x}"),
                 };
                 let amount = if let Ok(x) = capture[3].parse::<usize>() {
                     Amount::Value(x)

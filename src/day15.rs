@@ -95,7 +95,7 @@ impl Display for Map {
                     Some(Position::NearestSensor) => '#',
                     None => '.',
                 };
-                write!(f, "{}", v)?;
+                write!(f, "{v}")?;
             }
             writeln!(f)?;
         }

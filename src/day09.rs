@@ -22,7 +22,7 @@ fn simulate_rope(mut state: VecDeque<Position>, buf: String) -> usize {
             "D" => Dir::Down,
             "L" => Dir::Left,
             "R" => Dir::Right,
-            x => panic!("Unknown direction: {}", x),
+            x => panic!("Unknown direction: {x}"),
         };
         let distance = amount.parse::<usize>().unwrap();
         for _i in 0..distance {

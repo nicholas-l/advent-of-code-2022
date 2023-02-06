@@ -16,7 +16,7 @@ fn parse_input(buf: String) -> Vec<Vec<(usize, usize)>> {
                         x.trim().parse::<usize>().unwrap(),
                         y.trim()
                             .parse::<usize>()
-                            .unwrap_or_else(|_e| panic!("Could not parse: {}", y)),
+                            .unwrap_or_else(|_e| panic!("Could not parse: {y}")),
                     )
                 })
                 .collect()
@@ -147,7 +147,7 @@ impl Display for Map {
                     Some(Position::Sand) => 'o',
                     None => '.',
                 };
-                write!(f, "{}", v)?;
+                write!(f, "{v}")?;
             }
             writeln!(f)?;
         }

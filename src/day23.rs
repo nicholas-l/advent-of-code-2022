@@ -49,7 +49,7 @@ impl Display for Map {
                 } else {
                     '.'
                 };
-                write!(f, "{}", c)?;
+                write!(f, "{c}")?;
             }
             writeln!(f)?;
         }
