@@ -106,14 +106,16 @@ impl Display for Cavern {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct Cavern2 {
-    heights: [isize; 7],
+    positions: HashMap<usize, [bool; 7]>,
 }
 
 impl Cavern2 {
     fn new() -> Cavern2 {
-        Cavern2 { heights: [-1; 7] }
+        Cavern2 {
+            positions: HashMap::new(),
+        }
     }
 
     fn command(&self, rock: &mut Rock, command: &Command) -> bool {
@@ -122,16 +124,15 @@ impl Cavern2 {
             Command::Left => -1,
         };
 
-        // Could change to `any`
         if rock.template.iter().any(|p| {
             let new_pos = (rock.origin.0 + p.0 + dir, rock.origin.1 + p.1);
             new_pos.0 < 0
                 || new_pos.0 >= 7
                 || self
-                    .heights
-                    .iter()
-                    .enumerate()
-                    .any(|p| (p.0 as i64, *p.1 as i64) == new_pos)
+                    .positions
+                    .get(&(new_pos.1 as usize))
+                    .map(|x| x[new_pos.0 as usize])
+                    .unwrap_or(false)
         }) {
             false
         } else {
@@ -142,7 +143,11 @@ impl Cavern2 {
 
     fn fall(&mut self, rock: &mut Rock) -> bool {
         if rock.template.iter().any(|p| {
-            self.heights[(rock.origin.0 + p.0) as usize] as i64 >= (rock.origin.1 + p.1 - 1)
+            self.positions
+                .get(&((rock.origin.1 + p.1 - 1) as usize))
+                .map(|c| c[(rock.origin.0 + p.0) as usize])
+                .unwrap_or(false)
+                || rock.origin.1 + p.1 - 1 < 0
         }) {
             false
         } else {
@@ -151,27 +156,70 @@ impl Cavern2 {
         }
     }
 
+    fn heights(&self) -> [isize; 7] {
+        let mut heights = [0; 7];
+        for (y, row) in self.positions.iter() {
+            // println!("{:?} {:?}", y, row);
+            for (x, col) in row.iter().enumerate() {
+                // println!("\t{:?} {:?}: {:?}", x, col, heights);
+                if *col {
+                    heights[x] = heights[x].max(*y as isize + 1);
+                }
+            }
+        }
+        heights
+    }
+
     fn max_height(&self) -> isize {
-        *self.heights.iter().max().unwrap() + 1
+        *self.heights().iter().max().unwrap_or(&0)
     }
 
     fn place_rock(&mut self, rock: Rock) {
         for (x, y) in rock.positions() {
-            self.heights[x as usize] = self.heights[x as usize].max(y as isize);
+            self.positions.entry(y as usize).or_insert([false; 7])[x as usize] = true;
+        }
+        if self.positions.keys().len() > 50 {
+            let min = self.positions.keys().min().unwrap().clone();
+            self.positions.remove(&min);
         }
     }
 
     fn relative_heights(&self) -> [isize; 7] {
         let mut heights = [0; 7];
         let min = self.min_height();
+        let absolute_heights = self.heights();
         for (i, height) in heights.iter_mut().enumerate() {
-            *height = self.heights[i] - min;
+            *height = absolute_heights[i] - min;
         }
         heights
     }
 
     fn min_height(&self) -> isize {
-        self.heights.iter().min().unwrap() + 1
+        self.heights().iter().min().unwrap().clone()
+    }
+
+    fn drop_rock(&mut self, mut rock: Rock, commands: &[Command], command_index: &mut usize) {
+        let mut did_fall = true;
+        rock.set_current_position((2, self.max_height() as i64 + 3));
+        while did_fall {
+            let command = &commands[*command_index];
+            self.command(&mut rock, command);
+            // println!("{:?}: {:?}", command, rock);
+            *command_index += 1;
+            *command_index %= commands.len();
+            did_fall = self.fall(&mut rock);
+        }
+        self.place_rock(rock);
+        // println!("{:?}", self);
+    }
+
+    fn add_height(&mut self, height: isize) {
+        let new_positions = self
+            .positions
+            .iter()
+            .map(|(y, row)| (y + height as usize, row.clone()))
+            .collect::<HashMap<_, _>>();
+        self.positions = new_positions;
     }
 }
 
@@ -263,56 +311,66 @@ pub fn star_two(mut input: impl BufRead) -> String {
 
     let mut cavern = Cavern2::new();
 
-    let mut rock_index = 0;
     let mut command_index = 0;
 
-    let mut rock_count: i64 = 0;
+    let mut rock_count = 0;
 
     let finish_rock_count = 1_000_000_000_000;
-    // 1_000_000_000_000;
+    // 1_199_999_999_961
     let mut seen = HashMap::new();
 
     while rock_count <= finish_rock_count {
+        let rock_index = rock_count % rock_types.len();
+        // println!("{}: {:?}", rock_count, cavern.heights());
         if let Some((seen_rock_count, seen_height)) =
             seen.get(&(cavern.relative_heights(), rock_index, command_index))
         {
-            let delta_rock_count = dbg!(rock_count - seen_rock_count);
-            let delta_height = dbg!(cavern.min_height() - seen_height);
-
-            let d = dbg!((finish_rock_count - rock_count) / delta_rock_count);
-            while rock_count + delta_rock_count < finish_rock_count {
-                for height in cavern.heights.iter_mut() {
-                    *height += d as isize * (delta_height + 1);
-                }
-                rock_count += d * delta_rock_count;
-                rock_count += 1;
-            }
-            seen.clear();
+            // println!(
+            //     "We have seen this before! {} {} {} {}",
+            //     rock_count,
+            //     seen_rock_count,
+            //     seen_height,
+            //     cavern.min_height()
+            // );
+            // We have seen this before so we can skip ahead
+            let diff = rock_count - seen_rock_count;
+            let remaining = finish_rock_count - rock_count;
+            let skip = remaining / diff;
+            assert!(
+                skip * seen_rock_count + rock_count <= finish_rock_count,
+                "{}",
+                skip * seen_rock_count + rock_count
+            );
+            // println!(
+            //     "{}, {} {} {} {}",
+            //     rock_count, diff, remaining, skip, finish_rock_count
+            // );
+            cavern.add_height((cavern.min_height() - seen_height) * skip as isize);
+            rock_count += diff as usize * skip;
+            // rock_count += skip * diff;
+            // println!("{}: {:?}", rock_count, cavern.heights());
+            // command_index += 1;
+            // command_index %= commands.len();
+            // break
         } else {
             seen.insert(
                 (cavern.relative_heights(), rock_index, command_index),
                 (rock_count, cavern.min_height()),
             );
         }
-        let mut rock = rock_types[rock_index].clone();
-        let mut did_fall = true;
-        rock.set_current_position((2, cavern.max_height() as i64 + 3));
 
-        while did_fall {
-            cavern.command(&mut rock, &commands[command_index]);
-            command_index += 1;
-            command_index %= commands.len();
+        let rock = rock_types[rock_index].clone();
 
-            did_fall = cavern.fall(&mut rock);
-        }
-        cavern.place_rock(rock);
+        cavern.drop_rock(rock, &commands, &mut command_index);
 
         rock_count += 1;
-        rock_index += 1;
-        rock_index %= rock_types.len();
+        // if rock_count >= 999999999950 || rock_count == 999999999995 {
+        //     println!("{}: {:?}", rock_count, cavern.heights());
+        //     break;
+        // }
     }
 
-    (cavern.max_height() + 1).to_string()
+    (cavern.max_height() - 1).to_string()
 }
 
 #[cfg(test)]
@@ -396,7 +454,7 @@ mod tests {
 
         cavern.place_rock(rock);
 
-        assert_eq!(cavern.heights, [3, -1, -1, -1, -1, -1, -1]);
+        assert_eq!(cavern.heights(), [4, 0, 0, 0, 0, 0, 0]);
 
         let mut rock = Rock {
             template: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
@@ -434,11 +492,58 @@ mod tests {
                 template: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
                 template_origin: (0, 0),
                 origin: (0, 4),
-            }
+            },
+            "rock should not have fallen, {:?}",
+            cavern.positions
         );
 
         cavern.place_rock(rock);
-        assert_eq!(cavern.heights, [7, -1, -1, -1, -1, -1, -1]);
+        assert_eq!(cavern.heights(), [8, 0, 0, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_last_spot() {
+        let mut cavern = Cavern2::new();
+
+        let mut rock = Rock {
+            template: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+            template_origin: (0, 0),
+            origin: (6, 1),
+        };
+        let command = Command::Right;
+
+        let res = cavern.command(&mut rock, &command);
+        assert_eq!(res, false);
+
+        assert_eq!(
+            rock,
+            Rock {
+                template: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+                template_origin: (0, 0),
+                origin: (6, 1),
+            }
+        );
+        let res = cavern.fall(&mut rock);
+        assert_eq!(res, true);
+        assert_eq!(
+            rock,
+            Rock {
+                template: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+                template_origin: (0, 0),
+                origin: (6, 0),
+            }
+        );
+
+        assert_eq!(
+            rock.positions().collect::<Vec<_>>(),
+            [(6, 0), (6, 1), (6, 2), (6, 3)]
+        );
+
+        cavern.place_rock(rock);
+
+        // assert_eq!(cavern, Cavern2::new());
+
+        assert_eq!(cavern.heights(), [0, 0, 0, 0, 0, 0, 4]);
     }
 
     #[test]
@@ -458,11 +563,3 @@ mod tests {
         );
     }
 }
-
-// 1299667774096 low
-////1299003322270
-// 1_300_332_225_922 low
-// 690_842_490_843
-// 1563085399432 ?
-// 1411042944771
-// 1563085399432
