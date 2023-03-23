@@ -179,7 +179,7 @@ impl Cavern2 {
             self.positions.entry(y as usize).or_insert([false; 7])[x as usize] = true;
         }
         if self.positions.keys().len() > 50 {
-            let min = self.positions.keys().min().unwrap().clone();
+            let min = *self.positions.keys().min().unwrap();
             self.positions.remove(&min);
         }
     }
@@ -195,7 +195,7 @@ impl Cavern2 {
     }
 
     fn min_height(&self) -> isize {
-        self.heights().iter().min().unwrap().clone()
+        *self.heights().iter().min().unwrap()
     }
 
     fn drop_rock(&mut self, mut rock: Rock, commands: &[Command], command_index: &mut usize) {
@@ -217,7 +217,7 @@ impl Cavern2 {
         let new_positions = self
             .positions
             .iter()
-            .map(|(y, row)| (y + height as usize, row.clone()))
+            .map(|(y, row)| (y + height as usize, *row))
             .collect::<HashMap<_, _>>();
         self.positions = new_positions;
     }
@@ -346,7 +346,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
             //     rock_count, diff, remaining, skip, finish_rock_count
             // );
             cavern.add_height((cavern.min_height() - seen_height) * skip as isize);
-            rock_count += diff as usize * skip;
+            rock_count += diff * skip;
             // rock_count += skip * diff;
             // println!("{}: {:?}", rock_count, cavern.heights());
             // command_index += 1;

@@ -111,7 +111,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
                     .into_iter()
                     .rev()
                     .flat_map(|curr| {
-                        (0..5).into_iter().filter_map(move |v| {
+                        (0..5).filter_map(move |v| {
                             let ore_robots = isize::from(v == 0);
                             let clay_robots = isize::from(v == 1);
                             let obsidian_robots = isize::from(v == 2);
@@ -202,7 +202,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
                     .into_iter()
                     .rev()
                     .flat_map(|curr| {
-                        (0..5).into_iter().filter_map(move |v| {
+                        (0..5).filter_map(move |v| {
                             let ore_robots = isize::from(v == 0);
                             let clay_robots = isize::from(v == 1);
                             let obsidian_robots = isize::from(v == 2);
