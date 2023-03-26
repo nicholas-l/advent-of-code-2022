@@ -204,13 +204,11 @@ impl Cavern2 {
         while did_fall {
             let command = &commands[*command_index];
             self.command(&mut rock, command);
-            // println!("{:?}: {:?}", command, rock);
             *command_index += 1;
             *command_index %= commands.len();
             did_fall = self.fall(&mut rock);
         }
         self.place_rock(rock);
-        // println!("{:?}", self);
     }
 
     fn add_height(&mut self, height: isize) {
@@ -268,29 +266,21 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut rock_count = 0;
 
     while rock_count < 2022 {
-        // println!("{}", rock_count);
         let mut rock = rock_iter.next().unwrap().clone();
         let mut did_fall = true;
         rock.set_current_position((2, cavern.max_y + 4));
 
-        // println!("S: {:?}", rock);
-
         while did_fall {
             if let Some(command) = commands.next() {
                 rock.command(&cavern, command);
-                // println!("1: {:?}: {} {:?}", rock, did_fall, command);
             }
             did_fall = rock.fall(&cavern);
-            // println!("2: {:?}: {}", rock, did_fall);
         }
         cavern.positions.extend(rock.positions());
         cavern.max_y = cavern.max_y.max(rock.highest());
-        // println!("{:?}", rock);
-        // println!("{:?}", rock.positions().collect::<Vec<_>>());
-        // println!("{}", cavern);
+
         rock_count += 1;
     }
-    // println!("{}", cavern);
 
     cavern.max_y.to_string()
 }
