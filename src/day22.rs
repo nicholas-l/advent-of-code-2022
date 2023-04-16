@@ -40,6 +40,7 @@ impl Command {
                         Some(false) => break, // found wall
                         None => {
                             // Wrap around
+                            println!("Wrapping around: {:?}", next_position);
                             let (wrapped_pos, wrapped_dir) = map.get_most(&curr_pos, curr_dir)?;
                             // Check for wall
                             match map.positions.get(&wrapped_pos) {
@@ -184,7 +185,7 @@ impl Map {
                 .find(|j| self.positions.get(&(coord.0, *j)).is_some())
                 .unwrap();
             // We don't care about the direction here, so just return the direction
-            Ok(((coord.0, x), Direction::Right))
+            Ok(((coord.0, x), Direction::Left))
         }
     }
 
@@ -207,7 +208,7 @@ impl Map {
             let y = (self.bounds.0..=self.bounds.1)
                 .find(|i| self.positions.get(&(*i, coord.1)).is_some())
                 .unwrap();
-            Ok(((y, coord.1), Direction::Right))
+            Ok(((y, coord.1), Direction::Down))
         }
     }
 
@@ -232,7 +233,7 @@ impl Map {
                 .rev()
                 .find(|i| self.positions.get(&(*i, coord.1)).is_some())
                 .unwrap();
-            Ok(((y, coord.1), Direction::Right))
+            Ok(((y, coord.1), Direction::Up))
         }
     }
 
@@ -614,6 +615,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut position = (0, map.get_left_most(&(0, start_x)).unwrap().0 .1, 0);
 
     for command in commands {
+        println!("{:?}", position);
         position = command
             .move_position(&map, position)
             .unwrap_or_else(|e| panic!("Error: {:?} at {:?}", e, position));
