@@ -3,7 +3,7 @@ use std::{
     io::BufRead,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum Operation {
     Add,
     Multiply,
@@ -54,7 +54,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Token {
     Value(isize),
     Symbol(String),
@@ -72,7 +72,7 @@ impl Token {
     fn print(&self, equations: &HashMap<String, Equation>) -> String {
         match self {
             Token::Value(x) => x.to_string(),
-            Token::Symbol(s) => format!("({})", equations.get(s).unwrap().print(equations)),
+            Token::Symbol(s) => format!("({s}: {})", equations.get(s).unwrap().print(equations)),
         }
     }
 }
@@ -134,6 +134,7 @@ impl Equation {
         }
     }
 
+    #[allow(dead_code)]
     fn print(&self, equations: &HashMap<String, Equation>) -> String {
         if let Some(op) = &self.1 {
             let right = self.2.as_ref().unwrap();
@@ -145,6 +146,38 @@ impl Equation {
             )
         } else {
             self.0.print(equations)
+        }
+    }
+
+    fn try_solve(&self, symbol: &str) -> Option<isize> {
+        if self.0 == Token::Symbol(symbol.to_string())
+            && self
+                .1
+                .as_ref()
+                .map(|op| op == &Operation::Equals)
+                .unwrap_or_default()
+            && self
+                .2
+                .as_ref()
+                .map(|t| matches!(t, Token::Value(_)))
+                .unwrap_or_default()
+        {
+            if let Some(Token::Value(v)) = self.2.as_ref() {
+                Some(*v)
+            } else {
+                panic!()
+            }
+        } else if self.2 == Some(Token::Symbol(symbol.to_string()))
+            && self.1 == Some(Operation::Equals)
+            && matches!(self.0, Token::Value(_))
+        {
+            if let Token::Value(v) = self.0.clone() {
+                Some(v)
+            } else {
+                panic!()
+            }
+        } else {
+            None
         }
     }
 }
@@ -178,9 +211,9 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
                         equation.0 = child_equation.0.clone();
                         equation.1 = child_equation.1.clone();
                         equation.2 = child_equation.2.clone();
-                    }
-                } else if let Token::Symbol(s) = &equations.get(&name).unwrap().0 {
-                    if let Some(value) = constants.get(s) {
+                        changed = true;
+                        changed_all = true;
+                    } else if let Some(value) = constants.get(s) {
                         changed = true;
                         changed_all = true;
                         equations.get_mut(&name).unwrap().0 = Token::Value(*value);
@@ -196,28 +229,55 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
             }
         }
     }
-    // println!("{:?}", constants);
     changed_all
 }
 
-fn take_right_leaf(
+fn take_constant_leaf(
     equations: &mut HashMap<String, Equation>,
     key: &str,
-) -> Option<(Operation, Token)> {
-    if let Some(Token::Value(_v)) = &equations.get(key).unwrap().2 {
-        let equation = equations.get_mut(key).unwrap();
-        Some((equation.1.take().unwrap(), equation.2.take().unwrap()))
-    } else if let Some(Token::Symbol(s)) = &equations.get(key).unwrap().2 {
-        take_right_leaf(equations, &s.clone()).or_else(|| {
-            if let Token::Symbol(s) = &equations.get(key).unwrap().0 {
-                take_right_leaf(equations, &s.clone())
-            } else {
-                panic!(
-                    "Should have been simplified {:?}",
-                    &equations.get(key).unwrap()
-                );
+) -> Option<(Operation, Token, Token)> {
+    let root_equation = &equations.get(key).unwrap();
+
+    if let Token::Symbol(s) = &root_equation.0 {
+        // Assume other side is value
+        if let Some(Token::Value(v)) = root_equation.2.clone() {
+            let operation = root_equation.1.as_ref().unwrap();
+
+            return Some((
+                operation.inverse(),
+                Token::Value(v),
+                Token::Symbol(s.clone()),
+            ));
+        } else {
+            panic!("Symbols on both sides of equation");
+        }
+    }
+    if let Some(Token::Symbol(s)) = &root_equation.2 {
+        // Assume other side is value
+        if let Token::Value(v) = root_equation.0.clone() {
+            let operation = root_equation.1.as_ref().unwrap();
+            match operation {
+                Operation::Add => Some((
+                    operation.inverse(),
+                    Token::Value(v),
+                    Token::Symbol(s.clone()),
+                )),
+                Operation::Multiply => Some((
+                    operation.inverse(),
+                    Token::Value(v),
+                    Token::Symbol(s.clone()),
+                )),
+                Operation::Subtract => Some((
+                    operation.inverse(),
+                    Token::Symbol(s.clone()),
+                    Token::Value(v),
+                )),
+                Operation::Divide => todo!(),
+                Operation::Equals => todo!(),
             }
-        })
+        } else {
+            panic!("Symbols on both sides of equation");
+        }
     } else {
         None
     }
@@ -226,15 +286,20 @@ fn take_right_leaf(
 fn rotate(equations: &mut HashMap<String, Equation>) -> bool {
     if let Token::Value(v) = equations.get("root").unwrap().0.clone() {
         // Left hand side is constant so lets move values from right to left
-        let (operation, token) = take_right_leaf(equations, "root").unwrap();
-        let new_op = operation.inverse();
-        let new_key = format!("root-{v}");
-        equations.get_mut("root").unwrap().0 = Token::Symbol(new_key.clone());
-        equations.insert(
-            new_key,
-            Equation(Token::Value(v), Some(new_op), Some(token)),
-        );
-        true
+        if let Token::Symbol(ref s) = equations.get("root").unwrap().2.clone().unwrap() {
+            if let Some((operation, value, token)) = take_constant_leaf(equations, s) {
+                // println!("Rotating {} {} {:?}", v, operation.print(), token);
+                let new_key = format!("root-{v}");
+                equations.get_mut("root").unwrap().0 = Token::Symbol(new_key.clone());
+                equations.get_mut("root").unwrap().2 = Some(token);
+                equations.insert(
+                    new_key,
+                    Equation(Token::Value(v), Some(operation), Some(value)),
+                );
+                return true;
+            }
+        }
+        false
     } else if let Some(Token::Value(_v)) = equations.get("root").unwrap().2.clone() {
         let root = equations.get_mut("root").unwrap();
         root.0 = root.2.replace(root.0.clone()).unwrap();
@@ -288,36 +353,31 @@ pub fn star_two(mut input: impl BufRead) -> String {
     human.0 = Token::Value(-1);
 
     let mut changed = true;
-
     while changed {
         let changed1 = simplify(&mut equations, &ignore);
-        println!("A: {}", equations.get("root").unwrap().print(&equations));
+        // println!(
+        //     "A: {}: {}",
+        //     equations.get("root").unwrap().print(&equations),
+        //     changed1
+        // );
         let changed2 = rotate(&mut equations);
         changed = changed1 || changed2;
-        println!("B: {}", equations.get("root").unwrap().print(&equations));
-        // panic!();
-    }
-
-    // println!("{:#?}", equations);
-    // println!("{}", equations.get("root").unwrap().print(&equations));
-    // panic!();
-
-    //print equation
-
-    for i in 8317900000.. {
-        if i % 100_000 == 0 {
-            println!("{i}");
-        }
-        let human = equations.get_mut("humn").unwrap();
-        human.0 = Token::Value(i);
-        if equations.get("root").unwrap().calculate(&equations) == 1 {
-            return i.to_string();
+        // println!(
+        //     "B: {}: {}",
+        //     equations.get("root").unwrap().print(&equations),
+        //     changed2
+        // );
+        // println!("{:?}", equations.get("root").unwrap().try_solve("humn"));
+        if equations.get("root").unwrap().try_solve("humn").is_some() {
+            break;
         }
     }
+
     equations
         .get("root")
         .unwrap()
-        .calculate(&equations)
+        .try_solve("humn")
+        .unwrap()
         .to_string()
 }
 
