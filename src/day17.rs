@@ -377,7 +377,7 @@ mod tests {
             origin: (1, 4),
         };
         let res = cavern.command(&mut rock, &Command::Left);
-        assert_eq!(res, true);
+        assert!(res);
         assert_eq!(
             rock,
             Rock {
@@ -388,7 +388,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -399,7 +399,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -410,7 +410,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -421,7 +421,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -432,7 +432,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, false);
+        assert!(!did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -453,7 +453,7 @@ mod tests {
         };
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -464,7 +464,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, true);
+        assert!(did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -475,7 +475,7 @@ mod tests {
         );
 
         let did_fall = cavern.fall(&mut rock);
-        assert_eq!(did_fall, false);
+        assert!(!did_fall);
         assert_eq!(
             rock,
             Rock {
@@ -503,7 +503,7 @@ mod tests {
         let command = Command::Right;
 
         let res = cavern.command(&mut rock, &command);
-        assert_eq!(res, false);
+        assert!(!res);
 
         assert_eq!(
             rock,
@@ -514,7 +514,7 @@ mod tests {
             }
         );
         let res = cavern.fall(&mut rock);
-        assert_eq!(res, true);
+        assert!(res);
         assert_eq!(
             rock,
             Rock {

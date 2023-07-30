@@ -200,7 +200,7 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
                     changed_all = true;
                     let v = equations.get(&name).unwrap().value();
                     constants.insert(name.clone(), v);
-                    let mut equation = equations.get_mut(&name).unwrap();
+                    let equation = equations.get_mut(&name).unwrap();
                     equation.0 = Token::Value(v);
                     equation.1 = None;
                     equation.2 = None;
