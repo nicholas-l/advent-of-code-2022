@@ -59,7 +59,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
         .to_string()
 }
 
-fn get_score(map: &Vec<Vec<u32>>, i: usize, j: usize) -> usize {
+fn get_score(map: &[Vec<u32>], i: usize, j: usize) -> usize {
     let up = {
         let mut max_distance = 0;
         for y in (0..i).rev() {

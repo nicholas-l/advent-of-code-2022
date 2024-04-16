@@ -97,7 +97,7 @@ fn parse_monkeys(buf: String) -> Vec<Monkey> {
         .collect()
 }
 
-fn simulate(monkeys: &mut Vec<Monkey>, reduce_worry: bool) {
+fn simulate(monkeys: &mut [Monkey], reduce_worry: bool) {
     let max_div: usize = monkeys.iter().map(|monkey| monkey.divisor).product();
     for i in 0..monkeys.len() {
         let items_length = monkeys.get(i).unwrap().items.len();
