@@ -97,16 +97,14 @@ impl Map {
         loop {
             match self.positions.get(&(sand_position.0, sand_position.1 + 1)) {
                 Some(_) => {
-                    if self
+                    if !self
                         .positions
-                        .get(&(sand_position.0 - 1, sand_position.1 + 1))
-                        .is_none()
+                        .contains_key(&(sand_position.0 - 1, sand_position.1 + 1))
                     {
                         sand_position = (sand_position.0 - 1, sand_position.1 + 1);
-                    } else if self
+                    } else if !self
                         .positions
-                        .get(&(sand_position.0 + 1, sand_position.1 + 1))
-                        .is_none()
+                        .contains_key(&(sand_position.0 + 1, sand_position.1 + 1))
                     {
                         sand_position = (sand_position.0 + 1, sand_position.1 + 1);
                     } else {

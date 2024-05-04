@@ -209,8 +209,8 @@ fn simplify(equations: &mut HashMap<String, Equation>, ignore: &HashSet<String>)
                         let child_equation = equations.get(s).unwrap().clone();
                         let equation = equations.get_mut(&name).unwrap();
                         equation.0 = child_equation.0.clone();
-                        equation.1 = child_equation.1.clone();
-                        equation.2 = child_equation.2.clone();
+                        equation.1.clone_from(&child_equation.1);
+                        equation.2.clone_from(&child_equation.2);
                         changed = true;
                         changed_all = true;
                     } else if let Some(value) = constants.get(s) {

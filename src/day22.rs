@@ -158,7 +158,7 @@ impl Map {
                 })
         } else {
             let x = (self.bounds.2..=self.bounds.3)
-                .find(|j| self.positions.get(&(coord.0, *j)).is_some())
+                .find(|j| self.positions.contains_key(&(coord.0, *j)))
                 .unwrap();
             Ok(((coord.0, x), Direction::Right))
         }
@@ -182,7 +182,7 @@ impl Map {
         } else {
             let x = (self.bounds.2..=self.bounds.3)
                 .rev()
-                .find(|j| self.positions.get(&(coord.0, *j)).is_some())
+                .find(|j| self.positions.contains_key(&(coord.0, *j)))
                 .unwrap();
             // We don't care about the direction here, so just return the direction
             Ok(((coord.0, x), Direction::Left))
@@ -206,7 +206,7 @@ impl Map {
                 })
         } else {
             let y = (self.bounds.0..=self.bounds.1)
-                .find(|i| self.positions.get(&(*i, coord.1)).is_some())
+                .find(|i| self.positions.contains_key(&(*i, coord.1)))
                 .unwrap();
             Ok(((y, coord.1), Direction::Down))
         }
@@ -231,7 +231,7 @@ impl Map {
         } else {
             let y = (self.bounds.0..=self.bounds.1)
                 .rev()
-                .find(|i| self.positions.get(&(*i, coord.1)).is_some())
+                .find(|i| self.positions.contains_key(&(*i, coord.1)))
                 .unwrap();
             Ok(((y, coord.1), Direction::Up))
         }
@@ -609,7 +609,7 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let (map, commands) = parse_input(&buf, 2);
 
     let start_x = (0..=map.bounds.3)
-        .find(|j| map.positions.get(&(0, *j)).is_some())
+        .find(|j| map.positions.contains_key(&(0, *j)))
         .unwrap();
 
     let mut position = (0, map.get_left_most(&(0, start_x)).unwrap().0 .1, 0);
@@ -628,7 +628,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let _res = input.read_to_string(&mut buf);
     let (mut map, commands) = parse_input(&buf, 3);
     let start_x = (0..=map.bounds.3)
-        .find(|j| map.positions.get(&(0, *j)).is_some())
+        .find(|j| map.positions.contains_key(&(0, *j)))
         .unwrap();
     let mut position = (0, start_x, 0);
     map.init_edge_mapping();
