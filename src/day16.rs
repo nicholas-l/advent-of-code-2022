@@ -23,13 +23,13 @@ struct State2<'a> {
     opened: HashSet<&'a str>,
 }
 
-impl<'a> PartialOrd for State2<'a> {
+impl PartialOrd for State2<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for State2<'a> {
+impl Ord for State2<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.pressure_released.cmp(&other.pressure_released)
     }

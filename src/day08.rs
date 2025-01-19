@@ -1,7 +1,6 @@
 use std::io::BufRead;
 
 /// Not a scalable solution but does the job.
-
 pub fn star_one(mut input: impl BufRead) -> String {
     let mut buf = String::new();
     let _res = input.read_to_string(&mut buf);
