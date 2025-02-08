@@ -5,7 +5,7 @@ use nom::{
     combinator::map,
     multi::separated_list0,
     sequence::delimited,
-    IResult,
+    IResult, Parser,
 };
 use std::{cmp::Ordering, io::BufRead, iter};
 
@@ -16,15 +16,15 @@ enum Node {
 }
 
 fn parse_list(input: &str) -> IResult<&str, Node> {
-    map(separated_list0(char(','), parse_node), Node::List)(input)
+    map(separated_list0(char(','), parse_node), Node::List).parse(input)
 }
 
 fn parse_value(input: &str) -> IResult<&str, Node> {
-    map(u32, |x| Node::Value(x as usize))(input)
+    map(u32, |x| Node::Value(x as usize)).parse(input)
 }
 
 fn parse_node(input: &str) -> IResult<&str, Node> {
-    alt((delimited(char('['), parse_list, char(']')), parse_value))(input)
+    alt((delimited(char('['), parse_list, char(']')), parse_value)).parse(input)
 }
 
 fn parse_input(buf: String) -> Vec<(Node, Node)> {
