@@ -61,7 +61,7 @@ fn parse_lines(buf: String) -> Node {
     while let Some(line) = lines.next() {
         match line {
             x if x.starts_with("$ cd") => {
-                let new_directory = x.split(' ').last().unwrap();
+                let new_directory = x.rsplit(' ').next().unwrap();
                 match new_directory {
                     ".." => {
                         // Move up one
