@@ -40,15 +40,14 @@ impl Command {
                         Some(false) => break, // found wall
                         None => {
                             // Wrap around
-                            println!("Wrapping around: {:?}", next_position);
+                            println!("Wrapping around: {next_position:?}");
                             let (wrapped_pos, wrapped_dir) = map.get_most(&curr_pos, curr_dir)?;
                             // Check for wall
                             match map.positions.get(&wrapped_pos) {
                                 Some(true) => (wrapped_pos, wrapped_dir.into()), // Valid move
                                 Some(false) => break,                            // found wall
                                 None => panic!(
-                                    "Get most returned a position off the map: {:?}",
-                                    wrapped_pos
+                                    "Get most returned a position off the map: {wrapped_pos:?}"
                                 ),
                             }
                         }
@@ -362,7 +361,7 @@ impl Map {
             }
             Some(CornerType::Flat) => ((next, dir), None),
             x => {
-                panic!("Not, {:?} for {:?}", x, next);
+                panic!("Not, {x:?} for {next:?}");
             }
         }
     }
@@ -395,19 +394,19 @@ impl Map {
             for x in self.bounds.2..=self.bounds.3 {
                 match self.categorise2(&(y, x)) {
                     Some(CornerType::Internal(CornerDirection::TopLeft)) => {
-                        println!("Top left found at ({}, {})", y, x);
+                        println!("Top left found at ({y}, {x})");
                         stack.push(((y - 1, x), Direction::Up, (y, x - 1), Direction::Left))
                     }
                     Some(CornerType::Internal(CornerDirection::TopRight)) => {
-                        println!("Top right found at ({}, {})", y, x);
+                        println!("Top right found at ({y}, {x})");
                         stack.push(((y - 1, x), Direction::Up, (y, x + 1), Direction::Right))
                     }
                     Some(CornerType::Internal(CornerDirection::BottomLeft)) => {
-                        println!("Bottom left found at ({}, {})", y, x);
+                        println!("Bottom left found at ({y}, {x})");
                         stack.push(((y + 1, x), Direction::Down, (y, x - 1), Direction::Left))
                     }
                     Some(CornerType::Internal(CornerDirection::BottomRight)) => {
-                        println!("Bottom right found at ({}, {})", y, x);
+                        println!("Bottom right found at ({y}, {x})");
                         stack.push(((y + 1, x), Direction::Down, (y, x + 1), Direction::Right))
                     }
                     _ => {}
@@ -416,16 +415,15 @@ impl Map {
         }
 
         while let Some((side1, dir1, side2, dir2)) = stack.pop() {
-            println!("{:?}", stack);
+            println!("{stack:?}");
             println!(
-                "Processing: {:?}, {:?} - {:?}, {:?}",
-                side1, dir1, side2, dir2
+                "Processing: {side1:?}, {dir1:?} - {side2:?}, {dir2:?}"
             );
 
             let corner_type1 = self.categorise2(&side1);
             let corner_type2 = self.categorise2(&side2);
 
-            println!("{:?} {:?}", corner_type1, corner_type2);
+            println!("{corner_type1:?} {corner_type2:?}");
 
             assert_ne!(side1, side2);
 
@@ -464,9 +462,9 @@ impl Map {
             let (next_side2, maybe_next_side2) = self.get_next_point(&side2, dir2);
 
             if maybe_next_side1.is_some() || maybe_next_side2.is_some() {
-                println!("452: {:?} {:?}", maybe_next_side1, maybe_next_side2);
+                println!("452: {maybe_next_side1:?} {maybe_next_side2:?}");
 
-                println!("Adding to mapping: {:?} {:?}", next_side1, next_side2);
+                println!("Adding to mapping: {next_side1:?} {next_side2:?}");
                 self.edge_mapping.insert(
                     (
                         next_side1.0,
@@ -519,7 +517,7 @@ impl Map {
             1 => self.get_top_most(position),
             2 => self.get_right_most(position),
             3 => self.get_bottom_most(position),
-            x => panic!("Invalid direction: {}", x),
+            x => panic!("Invalid direction: {x}"),
         }
     }
 }
@@ -615,10 +613,10 @@ pub fn star_one(mut input: impl BufRead) -> String {
     let mut position = (0, map.get_left_most(&(0, start_x)).unwrap().0 .1, 0);
 
     for command in commands {
-        println!("{:?}", position);
+        println!("{position:?}");
         position = command
             .move_position(&map, position)
-            .unwrap_or_else(|e| panic!("Error: {:?} at {:?}", e, position));
+            .unwrap_or_else(|e| panic!("Error: {e:?} at {position:?}"));
     }
     (1000 * (position.0 + 1) + 4 * (position.1 + 1) + position.2 as isize).to_string()
 }
@@ -636,7 +634,7 @@ pub fn star_two(mut input: impl BufRead) -> String {
     for command in commands {
         position = command
             .move_position(&map, position)
-            .unwrap_or_else(|e| panic!("Error: {:?} at {:?}", e, position));
+            .unwrap_or_else(|e| panic!("Error: {e:?} at {position:?}"));
     }
     (1000 * (position.0 + 1) + 4 * (position.1 + 1) + position.2 as isize).to_string()
 }

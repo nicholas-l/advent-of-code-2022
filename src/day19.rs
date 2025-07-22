@@ -353,8 +353,8 @@ mod tests {
         let res: Vec<_> = vec![
             (0..=(2 / 2) as usize).collect(),
             (0..=(4 / 2) as usize).collect(),
-            (0..=4.min(2).min(0) as usize).collect(),
-            (0..=(4 / 2).min(2 / 2).max(0) as usize).collect(),
+            (0..=2.min(0) as usize).collect(),
+            (0..=2 / 2.max(0) as usize).collect(),
         ]
         .into_iter()
         .map(|v: Vec<usize>| v.into_iter())
