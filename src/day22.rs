@@ -416,9 +416,7 @@ impl Map {
 
         while let Some((side1, dir1, side2, dir2)) = stack.pop() {
             println!("{stack:?}");
-            println!(
-                "Processing: {side1:?}, {dir1:?} - {side2:?}, {dir2:?}"
-            );
+            println!("Processing: {side1:?}, {dir1:?} - {side2:?}, {dir2:?}");
 
             let corner_type1 = self.categorise2(&side1);
             let corner_type2 = self.categorise2(&side2);
