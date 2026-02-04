@@ -84,7 +84,6 @@ pub fn star_two(mut input: impl BufRead) -> String {
     let mut list = VecDeque::from_iter(
         coordinates
             .iter()
-            .cloned()
             .map(|x| Coordinate::UnMoved(x.value() * key))
             .enumerate(),
     );
